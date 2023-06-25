@@ -35,13 +35,14 @@ public class JwtService
         return parseLong(id);
     }
 
-    public  String GenerateToken(Map<String,Object> extraClaims, @NotNull User user){
+    public  String GenerateToken( @NotNull Map<String,Object> extraClaims, @NotNull User user){
 
         return Jwts.builder().setClaims(extraClaims)
                 .setIssuer("Arclight.com")
-                .setSubject(user.Email)
+                .setId(user.Id.toString())
+                .setSubject(user.email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                .setExpiration( new Date(System.currentTimeMillis() +1000 *60*24)) // 24 hours
+                .setExpiration( new Date(System.currentTimeMillis() +1000*60 *60*24)) // 24 hours
                 .signWith(getSigninKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -49,13 +50,15 @@ public class JwtService
     public  boolean IsTokenValid(String jwtToken, @NotNull UserDetails user){
 
         final  String email= ExtractEmail(jwtToken);
-        var isTokenValid= (email.equals(user.getUsername())) && !IsTokenExpired(jwtToken); // GEt email
+        var username= user.getUsername();
+        var isTokenExpired=IsTokenExpired(jwtToken);
+        var isTokenValid= (email.equals(username)) && !isTokenExpired; // GEt email
         return isTokenValid;
     }
     public  boolean IsTokenValid(String jwtToken, @NotNull User user){
 
         final  String email= ExtractEmail(jwtToken);
-        var isTokenValid= (email.equals(user.Email)) && !IsTokenExpired(jwtToken);
+        var isTokenValid= (email.equals(user.email)) && !IsTokenExpired(jwtToken);
         return isTokenValid;
     }
 

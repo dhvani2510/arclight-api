@@ -1,18 +1,12 @@
 package com.example.arclight.entities;
 
 import jakarta.annotation.Nullable;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.MappedSuperclass;
-import jakarta.persistence.SequenceGenerator;
 
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @MappedSuperclass
-//@AllArgsConstructor
-//@NoArgsConstructor
-//@Data
+
 public abstract class BaseEntity {
 
      //public UUID Id;
