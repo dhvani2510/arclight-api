@@ -1,15 +1,20 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.entities.datatypes.Role;
 import jakarta.persistence.*;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Period;
-import java.util.Set;
+import java.util.Collection;
+import java.util.List;
 
 @Entity
 @Table
-public class User extends  BaseEntity
+public class User extends  BaseEntity implements UserDetails
 { //Student
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
@@ -17,7 +22,8 @@ public class User extends  BaseEntity
     public  String Name;
     public  String Surname;
     public LocalDate BirthDay;
-    public  String Email;
+    @Column(unique = true)
+    public  String email;
 
     public  String Password; // Hashed
 
@@ -29,6 +35,9 @@ public class User extends  BaseEntity
     @Transient
     public Integer Age;
 
+    @Enumerated(EnumType.STRING)
+     private  Role Role;
+
 //    @ManyToMany(mappedBy = "UserLanguages")
 //    Set<Language> Languages;
 
@@ -36,24 +45,115 @@ public class User extends  BaseEntity
 
         this.Name= name;
         this.Surname= surname;
-        this.Email=email;
+        this.email=email;
         this.BirthDay= birthDay;
         this.Age=getAge();
         this.CreatedAt= LocalDateTime.now();
+        this.Role= com.example.arclight.entities.datatypes.Role.User;
     }
-//    public  User(String name, String surname, String email, LocalDate birthDay){
-//
-//        this.Name= name;
-//        this.Surname= surname;
-//        this.Email=email;
-//        this.BirthDay= birthDay;
-//        this.Age=getAge();
-//    }
 
     public User() {
     }
 
     public Integer getAge(){
         return Period.between(this.BirthDay,LocalDate.now()).getYears();
+    }
+    public void setRole(Role role) {
+        Role=role;
+    }
+    public String getEmail() {
+        return email;
+    }
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return List.of(new SimpleGrantedAuthority(Role.name()));
+    }
+
+    @Override
+    public String getUsername() {
+        return email; //email
+    }
+
+    @Override
+    public String getPassword() {
+        return Password;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
+    // Builder design pattern
+    private User(UserBuilder builder) {
+        this.Name=builder.Name;
+        this.Surname=builder.Surname;
+        this.Id=builder.Id;
+        this.email=builder.Email;
+        this.Password= builder.Password;
+        this.Role=builder.Role;
+    }
+
+    public void setPassword(String password) {
+        Password = password; // encrypt
+    }
+
+
+    //Builder Class
+    public static class UserBuilder{
+
+        // required parameters
+        private String Name;
+        private String Surname;
+
+        // optional parameters
+        private Long Id;
+
+        private String Email;
+        private String Password;
+        private  Role Role;
+
+        public UserBuilder(String name, String surname){
+            this.Name=name;
+            this.Surname=surname;
+        }
+
+        public UserBuilder setId(Long id) {
+            this.Id = id;
+            return this;
+        }
+
+        public UserBuilder setEmail(String email) {
+            this.Email = email;
+            return this;
+        }
+        public UserBuilder setPassword(String password) {
+            this.Password = password;
+            return this;
+        }
+        public UserBuilder setRole(Role role) {
+            this.Role = role;
+            return this;
+        }
+
+        public User build(){
+            return new User(this);
+        }
+
     }
 }
