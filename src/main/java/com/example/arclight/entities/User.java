@@ -19,9 +19,9 @@ public class User extends  BaseEntity implements UserDetails
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     public Long Id;
-    public  String Name;
-    public  String Surname;
-    public LocalDate BirthDay;
+    public  String firstName;
+    public  String lastName;
+    public LocalDate birthDay;
     @Column(unique = true)
     public  String email;
 
@@ -43,10 +43,10 @@ public class User extends  BaseEntity implements UserDetails
 
     public  User(String name, String surname, String email, LocalDate birthDay){
 
-        this.Name= name;
-        this.Surname= surname;
+        this.firstName= name;
+        this.lastName= surname;
         this.email=email;
-        this.BirthDay= birthDay;
+        this.birthDay= birthDay;
         this.Age=getAge();
         this.CreatedAt= LocalDateTime.now();
         this.Role= com.example.arclight.entities.datatypes.Role.User;
@@ -56,7 +56,7 @@ public class User extends  BaseEntity implements UserDetails
     }
 
     public Integer getAge(){
-        return Period.between(this.BirthDay,LocalDate.now()).getYears();
+        return Period.between(this.birthDay,LocalDate.now()).getYears();
     }
     public void setRole(Role role) {
         Role=role;
@@ -101,8 +101,8 @@ public class User extends  BaseEntity implements UserDetails
 
     // Builder design pattern
     private User(UserBuilder builder) {
-        this.Name=builder.Name;
-        this.Surname=builder.Surname;
+        this.firstName=builder.firstName;
+        this.lastName=builder.lastName;
         this.Id=builder.Id;
         this.email=builder.Email;
         this.Password= builder.Password;
@@ -118,8 +118,8 @@ public class User extends  BaseEntity implements UserDetails
     public static class UserBuilder{
 
         // required parameters
-        private String Name;
-        private String Surname;
+        private String firstName;
+        private String lastName;
 
         // optional parameters
         private Long Id;
@@ -129,8 +129,8 @@ public class User extends  BaseEntity implements UserDetails
         private  Role Role;
 
         public UserBuilder(String name, String surname){
-            this.Name=name;
-            this.Surname=surname;
+            this.firstName=name;
+            this.lastName=surname;
         }
 
         public UserBuilder setId(Long id) {

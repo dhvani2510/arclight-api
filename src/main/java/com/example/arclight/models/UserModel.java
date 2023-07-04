@@ -3,22 +3,22 @@ package com.example.arclight.models;
 import java.time.LocalDate;
 
 public class UserModel {
-    public Long Id;
-    public  String Name;
-    public  String Surname;
-    public LocalDate BirthDay;
-    public  String Email;
+    public Long id;
+    public  String firstName;
+    public  String lastName;
+    public LocalDate birthDay;
+    public  String email;
 
     //public File Image;
 
-    public Integer Age;
+    public Integer age;
 
     public UserModel(Long id, String name, String surname, LocalDate birthDay, String email, Integer age) {
-        Id = id;
-        Name = name;
-        Surname = surname;
-        BirthDay = birthDay;
-        Email = email;
-        Age = age;
+        this.id = id;
+        this.firstName= name;
+        this.lastName= surname;
+        this.email=email;
+        this.birthDay= birthDay;
+        this.age = age;
     }
 }

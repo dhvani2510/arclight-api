@@ -2,15 +2,15 @@ package com.example.arclight.models;
 
 public class UserContext
 {
-    private  Long Id;
-    private  String Name;
-    private  String Surname;
-    private  String Email;
+    private  Long id;
+    private  String firstName;
+    private  String lastName;
+    private  String email;
 
     public UserContext(Long id, String name, String surname, String email) {
-        Id = id;
-        Name = name;
-        Surname = surname;
-        Email = email;
+    	this.id = id;
+        this.firstName= name;
+        this.lastName= surname;
+        this.email=email;
     }
 }
