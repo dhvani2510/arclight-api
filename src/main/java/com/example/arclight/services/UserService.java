@@ -47,7 +47,7 @@ public class UserService {
 
         List<User> users= userRepository.findAll();
         List<UserModel> result = users.stream()
-                .map(u -> new UserModel(u.Id,u.Name, u.Surname,u.BirthDay,u.email, u.Age))
+                .map(u -> new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age))
                 .toList();
         return result;
     }
@@ -67,7 +67,7 @@ public class UserService {
         if(u== null)
             throw  new ArclightException("User not found");
 
-        var result= new UserModel(u.Id,u.Name, u.Surname,u.BirthDay,u.email, u.Age);
+        var result= new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age);
         return result;
     }
 
@@ -104,7 +104,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        var response= new RegisterResponse(user.Id,user.email,user.Name, user.Surname);
+        var response= new RegisterResponse(user.Id,user.email,user.firstName, user.lastName);
         return  response;
     }
 
