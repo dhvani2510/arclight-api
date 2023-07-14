@@ -10,7 +10,7 @@ public class ProfileRequest
 {
     private  String firstName;
     private  String lastName;
-    //private MultipartFile picture; // TODO later, to ignore now, it is not working properly
+    private MultipartFile image; // TODO later, to ignore now, it is not working properly
     private LocalDate birthDay;
 
     public ProfileRequest(String firstName, String lastName, LocalDate birthDay)
@@ -38,19 +38,19 @@ public class ProfileRequest
         this.lastName = lastName;
     }
 
-    //public MultipartFile getPicture() {
-        //return picture;
-    //}
-
-    //public void setPicture(MultipartFile picture) {
-        //this.picture = picture;
-    //}
-
     public LocalDate getBirthDay() {
         return birthDay;
     }
 
     public void setBirthDay(LocalDate birthDay) {
         this.birthDay = birthDay;
+    }
+
+    public MultipartFile getImage() {
+        return image;
+    }
+
+    public void setImage(MultipartFile image) {
+        this.image = image;
     }
 }
