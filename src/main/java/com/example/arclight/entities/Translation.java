@@ -1,5 +1,6 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.models.translation.TranslationRequest;
 import jakarta.persistence.*;
 
@@ -9,7 +10,7 @@ public class Translation extends  BaseEntity
 {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private Long Id;
+    private Long id;
     private   String english;
     private   String hindi;
     private   String french;
@@ -28,6 +29,12 @@ public class Translation extends  BaseEntity
 
     public Translation() {
 
+    }
+
+    public String translate(LanguageOption languageOption) {
+        return  languageOption== LanguageOption.Hindi? hindi:
+                languageOption== LanguageOption.French? french:
+                        english;
     }
 
     public String getEnglish() {
@@ -55,10 +62,10 @@ public class Translation extends  BaseEntity
     }
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 }

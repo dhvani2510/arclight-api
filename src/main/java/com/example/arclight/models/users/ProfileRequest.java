@@ -1,5 +1,8 @@
 package com.example.arclight.models.users;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,6 +15,8 @@ public class ProfileRequest
     private  String lastName;
     //private MultipartFile picture; // TODO later, to ignore now, it is not working properly
     private LocalDate birthDay;
+    @Enumerated(EnumType.STRING)
+    private LanguageOption secondaryLanguage;
 
     public ProfileRequest(String firstName, String lastName, LocalDate birthDay)
     //public ProfileRequest(String firstName, String lastName, MultipartFile picture, LocalDate birthDay)
@@ -52,5 +57,13 @@ public class ProfileRequest
 
     public void setBirthDay(LocalDate birthDay) {
         this.birthDay = birthDay;
+    }
+
+    public LanguageOption getSecondaryLanguage() {
+        return secondaryLanguage;
+    }
+
+    public void setSecondaryLanguage(LanguageOption secondaryLanguage) {
+        this.secondaryLanguage = secondaryLanguage;
     }
 }

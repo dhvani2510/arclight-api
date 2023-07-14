@@ -1,5 +1,6 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.entities.datatypes.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -28,10 +29,10 @@ public class User extends  BaseEntity implements UserDetails
     public  String Password; // Hashed
 
     @OneToOne(cascade = CascadeType.PERSIST)
-    public  File Image;
+    public  File image;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
-    public  Language SecondaryLanguage;
+    @Enumerated(EnumType.STRING)
+    public LanguageOption secondaryLanguage;
     @Transient
     public Integer Age;
 
@@ -56,6 +57,8 @@ public class User extends  BaseEntity implements UserDetails
     }
 
     public Integer getAge(){
+        if(birthDay ==null)
+            return null;
         return Period.between(this.birthDay,LocalDate.now()).getYears();
     }
     public void setRole(Role role) {

@@ -6,6 +6,8 @@ import com.example.arclight.models.UserModel;
 import com.example.arclight.models.users.ProfileRequest;
 import com.example.arclight.services.UserService;
 import com.example.arclight.shared.exceptions.ArclightException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequestMapping(path="api/v1/users")
 public class UserController {
     private  final  UserService userService;
+    private static final Logger logger= LoggerFactory.getLogger(UserController.class);
     @Autowired
     public  UserController(UserService userService){
         this.userService= userService;
@@ -39,9 +42,11 @@ public class UserController {
             return ResponseModel.Ok("My user profile fetched", user);
         }
         catch (ArclightException e){
+            logger.error(e.getMessage(),e);
             return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         catch (Exception e){
+            logger.error(e.getMessage(),e);
             return new ResponseEntity("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }

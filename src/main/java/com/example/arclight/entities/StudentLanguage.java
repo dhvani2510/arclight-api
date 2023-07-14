@@ -1,5 +1,6 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
 import jakarta.persistence.*;
 
 @Entity
@@ -13,10 +14,8 @@ public class StudentLanguage extends  BaseEntity
     @OneToOne(cascade = CascadeType.ALL)
     //@JoinColumn(name = "UserId", referencedColumnName = "id")
     private User User;
-
-    @OneToOne(cascade = CascadeType.ALL)
-    //@JoinColumn(name = "LanguageId", referencedColumnName = "id")
-    private Language Language;
+    @Enumerated(EnumType.STRING)
+    private LanguageOption Language;
 
 //    @OneToMany(cascade = CascadeType.ALL, targetEntity = Report.class)
 //    @JoinColumn(name = "to_user_id")

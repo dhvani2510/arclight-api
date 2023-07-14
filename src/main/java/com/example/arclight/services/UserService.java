@@ -82,7 +82,7 @@ public class UserService {
        user.birthDay= profileRequest.getBirthDay();
        user.firstName= profileRequest.getFirstName();
        user.lastName= profileRequest.getLastName();
-
+       user.secondaryLanguage= profileRequest.getSecondaryLanguage();
          return new ProfileResponse(user.firstName, user.lastName,"/api/v1/files/{id}", user.birthDay);
      }
 
@@ -101,7 +101,7 @@ public class UserService {
         if(u== null)
             throw  new ArclightException("User not found");
 
-        var result= new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age);
+        var result= new UserModel(u);
         return result;
     }
 

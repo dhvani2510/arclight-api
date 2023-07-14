@@ -1,5 +1,8 @@
 package com.example.arclight.models;
 
+import com.example.arclight.entities.User;
+import com.example.arclight.entities.datatypes.LanguageOption;
+
 import java.time.LocalDate;
 import java.time.Period;
 
@@ -9,6 +12,7 @@ public class UserModel {
     public  String lastName;
     public LocalDate birthDay;
     public  String email;
+    public LanguageOption secondaryLangage;
 
     //public File Image;
 
@@ -21,6 +25,17 @@ public class UserModel {
         this.email=email;
         this.birthDay= birthDay;
         this.age = age==null? getAge(birthDay): age;
+    }
+
+    public UserModel(User user){
+        this.id = user.Id;
+        this.firstName= user.firstName;
+        this.lastName= user.lastName;
+        this.email=user.email;
+        if(user.birthDay!=null)
+        this.birthDay=user.birthDay;
+        this.age = user.getAge()==null? getAge(birthDay): age;
+        this.secondaryLangage= user.secondaryLanguage;
     }
 
     private  Integer getAge(LocalDate birthDay){

@@ -19,7 +19,7 @@ public class File extends  BaseEntity
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     public Long Id;
     public String Name ;
-    public String ContentType ;// Image, Audio, Video
+    public String ContentType ;// Image, Video
     public byte[] Bytes ;
     public Long SizeInBytes ;
 
