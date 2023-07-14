@@ -8,6 +8,8 @@ import com.example.arclight.models.auth.AuthenticationRequest;
 import com.example.arclight.models.auth.AuthenticationResponse;
 import com.example.arclight.models.auth.RegisterRequest;
 import com.example.arclight.models.auth.RegisterResponse;
+import com.example.arclight.models.users.ProfileRequest;
+import com.example.arclight.models.users.ProfileResponse;
 import com.example.arclight.repositories.UserRepository;
 import com.example.arclight.shared.exceptions.ArclightException;
 import com.example.arclight.shared.helpers.HttpHelper;
@@ -51,6 +53,38 @@ public class UserService {
                 .toList();
         return result;
     }
+
+    public  UserModel GetProfile(Long id) throws ArclightException {
+        logger.info("Getting user {} profile",id);
+
+        var user= userRepository.findById(id).orElseThrow(()-> new ArclightException("User not found"));
+        return new UserModel(user.Id,user.firstName, user.lastName,user.birthDay,user.email, user.Age);
+    }
+
+   public ProfileResponse UpdateProfile(ProfileRequest profileRequest) throws ArclightException {
+       if(StringIsNullOrEmpty(profileRequest.getFirstName()))
+           throw new ArclightException("First name is empty");
+       if(StringIsNullOrEmpty(profileRequest.getFirstName()))
+           throw new ArclightException("Last name is empty");
+       if(profileRequest.getBirthDay()==null)
+           throw new ArclightException("Birthday is null");
+
+       logger.info("Getting user profile from context");
+       var auth= SecurityContextHolder.getContext().getAuthentication();
+       if(!auth.isAuthenticated()){
+           var details= auth.getDetails();
+           logger.error("User {} is not authenticated", details);
+           throw new ArclightException("user is not authenticated");
+       }
+       var user = userRepository.findByEmail(auth.getName()).orElseThrow(()-> new ArclightException("User not found")); // name should contain the enail
+       //var user= (User)auth.getPrincipal();//var user= userRepository.findById(((User)auth.getPrincipal()))
+
+       user.birthDay= profileRequest.getBirthDay();
+       user.firstName= profileRequest.getFirstName();
+       user.lastName= profileRequest.getLastName();
+
+         return new ProfileResponse(user.firstName, user.lastName,"/api/v1/files/{id}", user.birthDay);
+     }
 
     public  UserModel GetUser() throws ArclightException {
         logger.info("Getting user profile");
