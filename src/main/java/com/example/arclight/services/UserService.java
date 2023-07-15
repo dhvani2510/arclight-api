@@ -12,15 +12,12 @@ import com.example.arclight.models.users.ProfileRequest;
 import com.example.arclight.models.users.ProfileResponse;
 import com.example.arclight.repositories.UserRepository;
 import com.example.arclight.shared.exceptions.ArclightException;
-import com.example.arclight.shared.helpers.HttpHelper;
-import jakarta.persistence.EntityExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -107,7 +104,7 @@ public class UserService {
 
     public RegisterResponse register(RegisterRequest registerRequest) throws ArclightException {
 
-        logger.info("User is registering with email {} and name {}", registerRequest.getEmail(), registerRequest.getName());
+        logger.info("User is registering with email {} and name {}", registerRequest.getEmail(), registerRequest.getFirstName());
         // Check if auto mapper exist in Java
         if(StringIsNullOrEmpty(registerRequest.getEmail()))
             throw  new ArclightException("Email is empty");
@@ -116,9 +113,9 @@ public class UserService {
         if(StringIsNullOrEmpty(registerRequest.getPassword()))
             throw new ArclightException("Password is empty");
 
-        if(StringIsNullOrEmpty(registerRequest.getName()))
+        if(StringIsNullOrEmpty(registerRequest.getFirstName()))
             throw new ArclightException("Name is empty");
-        if(StringIsNullOrEmpty(registerRequest.getSurname()))
+        if(StringIsNullOrEmpty(registerRequest.getLastName()))
             throw new ArclightException("Surname is empty");
 
         var existinguser= userRepository.findByEmail(registerRequest.getEmail());
@@ -130,7 +127,7 @@ public class UserService {
         }
         var hashedPassword= //hashWith256(registerRequest.getPassword());
         passwordEncoder.encode(registerRequest.getPassword());
-        var user= new User.UserBuilder(registerRequest.getName(),registerRequest.getSurname())
+        var user= new User.UserBuilder(registerRequest.getFirstName(),registerRequest.getLastName())
                 .setEmail(registerRequest.getEmail())
                 .setPassword(hashedPassword)
                 .setRole(Role.User)

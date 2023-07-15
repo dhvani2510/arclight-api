@@ -5,30 +5,35 @@ import org.springframework.http.ResponseEntity;
 
 public class ResponseModel
 {
+    private  int status;
     private String message;
     private Object data;
 
-    public ResponseModel(String _message, Object _data) {
-        message = _message;
-        data = _data;
+    public ResponseModel(int status,String message, Object data) {
+        this.status=status;
+        this.message = message;
+        this.data = data;
     }
 
-    public ResponseModel(String _message) {
-        message = _message;
+    public ResponseModel(int status, String message) {
+        this.status= status;
+        this.message = message;
     }
-    public  static ResponseEntity<ResponseModel> Ok(String _message){
-        var response= new ResponseModel(_message,null);
-        return new ResponseEntity(response, HttpStatus.OK);
+    public  static ResponseEntity<ResponseModel> Ok(String message){
+        var status=HttpStatus.OK;
+        var response= new ResponseModel(status.value(), message,null);
+        return new ResponseEntity(response, status);
     }
-    public  static ResponseEntity<ResponseModel> Ok(String _message, Object _data){
-        var response= new ResponseModel(_message,_data);
-        return new ResponseEntity(response, HttpStatus.OK);
+    public  static ResponseEntity<ResponseModel> Ok(String message, Object data){
+        var status=HttpStatus.OK;
+        var response= new ResponseModel(status.value(), message,data);
+        return new ResponseEntity(response, status);
     }
 
-    public static ResponseEntity<ResponseModel> Fail(String _message,  HttpStatus status){
+    public static ResponseEntity<ResponseModel> Fail(String message,  HttpStatus status){
         if(status==HttpStatus.OK)
             return null;
-        var response= new ResponseModel(_message,null);
+        var response= new ResponseModel(status.value(), message,null);
         return new ResponseEntity(response, status);
     }
 
@@ -46,5 +51,12 @@ public class ResponseModel
 
     public void setData(Object data) {
         this.data = data;
+    }
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }
