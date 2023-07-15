@@ -19,19 +19,20 @@ import static org.mockito.Mockito.*;
 
 class UserServiceTest {
 
-    @Mock
-    private UserRepository userRepository;
+	@Mock
+	private UserRepository userRepository;
 
-    @InjectMocks
-    private UserService userService;
+	@InjectMocks
+	private UserService userService;
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+	@BeforeEach
+	void setUp() {
+		MockitoAnnotations.openMocks(this);
+	}
 
-    @Test
+	@Test
     void testGetUsers_Success() {
+    	String s[] = {"aarushi@example.com", "s@example.com"};
         // Arrange
         List<User> users = new ArrayList<>();
         users.add(new User.UserBuilder("Aarushi", "Bagri")
@@ -39,10 +40,11 @@ class UserServiceTest {
                 .setEmail("aarushi@example.com")
                 .setRole(Role.User)
                 .build());
-		/*
-		 * users.add(new User.UserBuilder("S", "S") .setId(2L)
-		 * .setEmail("s@example.com") .setRole(Role.User) .build());
-		 */
+        users.add(new User.UserBuilder("S", "S") 
+        		.setId(2L)
+      		  	.setEmail("s@example.com") 
+      		  	.setRole(Role.User) 
+      		  	.build());
 
         when(userRepository.findAll()).thenReturn(users);
 
@@ -54,16 +56,10 @@ class UserServiceTest {
         for (int i = 0; i < users.size(); i++) {
             User user = users.get(i);
             UserModel userModel = result.get(i);
-			/*
-			 * Assertions.assertEquals(user.getId(), userModel.getId());
-			 * Assertions.assertEquals(user.getFirstName(), userModel.getFirstName());
-			 * Assertions.assertEquals(user.getLastName(), userModel.getLastName());
-			 * Assertions.assertEquals(user.getBirthDay(), userModel.getBirthDay());
-			 */
-            Assertions.assertEquals("aarushi@example.com", user.getEmail());
-            //Assertions.assertEquals(user.getAge(), userModel.getAge());
+            Assertions.assertEquals(s[i], user.getEmail());
         }
 
         verify(userRepository, times(1)).findAll();
     }
+    
 }
