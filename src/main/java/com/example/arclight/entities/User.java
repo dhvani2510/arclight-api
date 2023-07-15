@@ -1,5 +1,6 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.entities.datatypes.Role;
 import jakarta.persistence.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,13 +16,13 @@ import java.util.List;
 @Entity
 @Table
 public class User extends  BaseEntity implements UserDetails
-{ //Student
+{
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
     public Long Id;
     public  String firstName;
     public  String lastName;
-    public LocalDate birthDay;
+    public LocalDate birthDate;
     @Column(unique = true)
     public  String email;
 
@@ -30,23 +31,20 @@ public class User extends  BaseEntity implements UserDetails
     @OneToOne(cascade = CascadeType.PERSIST)
     private  File image;
 
-    @OneToOne(cascade = CascadeType.PERSIST)
-    public  Language SecondaryLanguage;
+    @Enumerated(EnumType.STRING)
+    private LanguageOption secondaryLanguage;
     @Transient
     public Integer Age;
 
     @Enumerated(EnumType.STRING)
      private  Role Role;
 
-//    @ManyToMany(mappedBy = "UserLanguages")
-//    Set<Language> Languages;
-
     public  User(String name, String surname, String email, LocalDate birthDay){
 
         this.firstName= name;
         this.lastName= surname;
         this.email=email;
-        this.birthDay= birthDay;
+        this.birthDate = birthDay;
         this.Age=getAge();
         this.CreatedAt= LocalDateTime.now();
         this.Role= com.example.arclight.entities.datatypes.Role.User;
@@ -57,7 +55,7 @@ public class User extends  BaseEntity implements UserDetails
     }
 
     public Integer getAge(){
-        return Period.between(this.birthDay,LocalDate.now()).getYears();
+        return Period.between(this.birthDate,LocalDate.now()).getYears();
     }
     public void setRole(Role role) {
         Role=role;
@@ -125,6 +123,14 @@ public class User extends  BaseEntity implements UserDetails
         this.image = image;
     }
 
+    public LanguageOption getSecondaryLanguage() {
+        return secondaryLanguage;
+    }
+
+    public void setSecondaryLanguage(LanguageOption secondaryLanguage) {
+        this.secondaryLanguage = secondaryLanguage;
+    }
+
 
     //Builder Class
     public static class UserBuilder{
@@ -160,6 +166,11 @@ public class User extends  BaseEntity implements UserDetails
         }
         public UserBuilder setRole(Role role) {
             this.Role = role;
+            return this;
+        }
+
+        public UserBuilder setSecondaryLanguage(LanguageOption secondaryLanguage) {
+            this.setSecondaryLanguage(secondaryLanguage) ;
             return this;
         }
 

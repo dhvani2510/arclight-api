@@ -2,6 +2,7 @@ package com.example.arclight.services;
 
 import com.example.arclight.configurations.JwtService;
 import com.example.arclight.entities.User;
+import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.entities.datatypes.Role;
 import com.example.arclight.models.UserModel;
 import com.example.arclight.models.auth.AuthenticationRequest;
@@ -49,7 +50,7 @@ public class UserService {
 
         List<User> users= userRepository.findAll();
         List<UserModel> result = users.stream()
-                .map(u -> new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age,u.getImageId()))
+                .map(u -> new UserModel(u))
                 .toList();
         return result;
     }
@@ -58,7 +59,7 @@ public class UserService {
         logger.info("Getting user {} profile",id);
 
         var user= userRepository.findById(id).orElseThrow(()-> new ArclightException("User not found"));
-        return new UserModel(user.Id,user.firstName, user.lastName,user.birthDay,user.email, user.Age,user.getImageId());
+        return new UserModel(user);
     }
 
    public ProfileResponse UpdateProfile(ProfileRequest profileRequest) throws ArclightException, IOException {
@@ -66,7 +67,7 @@ public class UserService {
            throw new ArclightException("First name is empty");
        if(StringIsNullOrEmpty(profileRequest.getFirstName()))
            throw new ArclightException("Last name is empty");
-       if(profileRequest.getBirthDay()==null)
+       if(profileRequest.getBirthDate()==null)
            throw new ArclightException("Birthday is null");
 
        logger.info("Getting user profile from context");
@@ -80,16 +81,22 @@ public class UserService {
                .orElseThrow(()-> new ArclightException("User not found")); // name should contain the enail
        //var user= (User)auth.getPrincipal();//var user= userRepository.findById(((User)auth.getPrincipal()))
 
-       if(profileRequest.getBirthDay()!=null)
-       user.birthDay= profileRequest.getBirthDay();
+       if(profileRequest.getBirthDate()!=null)
+           user.birthDate = profileRequest.getBirthDate();
        user.firstName= profileRequest.getFirstName();
        user.lastName= profileRequest.getLastName();
-       var image= fileService.Upload(profileRequest.getImage());
-       user.setImage(image);
+       if(profileRequest.getSecondaryLanguage()== LanguageOption.English)
+           throw new ArclightException("Secondary language cannot be set to english");
+
+       user.setSecondaryLanguage(profileRequest.getSecondaryLanguage());
+       if(profileRequest.getImage()!=null){
+           var image= fileService.Upload(profileRequest.getImage());
+           user.setImage(image);
+       }
        userRepository.save(user);
 
        logger.info("User profile updated");
-       return new ProfileResponse(user.firstName, user.lastName,image.getUrl(), user.birthDay);
+       return new ProfileResponse(user);
      }
 
     public  UserModel GetUser() throws ArclightException {
@@ -101,13 +108,13 @@ public class UserService {
            throw  new ArclightException("user is not authenticated");
        }
 
-        var u= (User)auth.getPrincipal();
+        var user= (User)auth.getPrincipal();
 //        var u= userRepository.findById(user.Id)
 //                .orElseThrow(()-> new ArclightException("User not found"));
-        if(u== null)
+        if(user== null)
             throw  new ArclightException("User not found");
 
-        var result= new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age,u.getImageId());
+        var result= new UserModel(user);
         return result;
     }
 
