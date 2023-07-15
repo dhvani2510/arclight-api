@@ -1,7 +1,5 @@
 package com.example.arclight.models.users;
 
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -10,15 +8,14 @@ public class ProfileRequest
 {
     private  String firstName;
     private  String lastName;
-    //private MultipartFile picture; // TODO later, to ignore now, it is not working properly
+    private MultipartFile image;
     private LocalDate birthDay;
 
-    public ProfileRequest(String firstName, String lastName, LocalDate birthDay)
-    //public ProfileRequest(String firstName, String lastName, MultipartFile picture, LocalDate birthDay)
+   public ProfileRequest(String firstName, String lastName, MultipartFile image, LocalDate birthDay)
     {
         this.firstName = firstName;
         this.lastName = lastName;
-        //this.picture = picture;
+        this.image = image;
         this.birthDay = birthDay;
     }
 
@@ -38,19 +35,19 @@ public class ProfileRequest
         this.lastName = lastName;
     }
 
-    //public MultipartFile getPicture() {
-        //return picture;
-    //}
-
-    //public void setPicture(MultipartFile picture) {
-        //this.picture = picture;
-    //}
-
     public LocalDate getBirthDay() {
         return birthDay;
     }
 
     public void setBirthDay(LocalDate birthDay) {
         this.birthDay = birthDay;
+    }
+
+    public MultipartFile getImage() {
+        return image;
+    }
+
+    public void setImage(MultipartFile image) {
+        this.image = image;
     }
 }

@@ -1,14 +1,12 @@
 package com.example.arclight.models.users;
 
-import org.springframework.web.multipart.MultipartFile;
-
 import java.time.LocalDate;
 
 public class ProfileResponse
 {
     private  String firstName;
     private  String lastName;
-    private String picture; // TODO later, to ignore now, it is not working properly
+    private String image;
     private LocalDate birthDay;
 
     public String getFirstName() {
@@ -27,12 +25,12 @@ public class ProfileResponse
         this.lastName = lastName;
     }
 
-    public String getPicture() {
-        return picture;
+    public String getImage() {
+        return image;
     }
 
-    public void setPicture(String picture) {
-        this.picture = picture;
+    public void setImage(String image) {
+        this.image = image;
     }
 
     public LocalDate getBirthDay() {
@@ -43,10 +41,10 @@ public class ProfileResponse
         this.birthDay = birthDay;
     }
 
-    public ProfileResponse(String firstName, String lastName, String picture, LocalDate birthDay) {
+    public ProfileResponse(String firstName, String lastName, String image, LocalDate birthDay) {
         this.firstName = firstName;
         this.lastName = lastName;
-        this.picture = picture;
+        this.image = image;
         this.birthDay = birthDay;
     }
 }
