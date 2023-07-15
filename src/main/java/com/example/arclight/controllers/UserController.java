@@ -49,10 +49,10 @@ public class UserController {
     @RequestMapping(
             path = "profile",
             method = RequestMethod.POST
-            //, consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+            , consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
      //@ModelAttribute //@RequestParam("file")MultipartFile file // TODO implement the picture part, upload is complex
-    public ResponseEntity<ResponseModel> UpdateProfile(@RequestBody ProfileRequest profileRequest)
+    public ResponseEntity<ResponseModel> UpdateProfile(@ModelAttribute ProfileRequest profileRequest)
     {
         try{
             var user= userService.UpdateProfile(profileRequest);
