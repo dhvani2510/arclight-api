@@ -28,7 +28,7 @@ public class User extends  BaseEntity implements UserDetails
     public  String Password; // Hashed
 
     @OneToOne(cascade = CascadeType.PERSIST)
-    public  File Image;
+    private  File image;
 
     @OneToOne(cascade = CascadeType.PERSIST)
     public  Language SecondaryLanguage;
@@ -50,6 +50,7 @@ public class User extends  BaseEntity implements UserDetails
         this.Age=getAge();
         this.CreatedAt= LocalDateTime.now();
         this.Role= com.example.arclight.entities.datatypes.Role.User;
+        this.setCreatedAt(LocalDateTime.now());
     }
 
     public User() {
@@ -111,6 +112,17 @@ public class User extends  BaseEntity implements UserDetails
 
     public void setPassword(String password) {
         Password = password; // encrypt
+    }
+
+    public Long getImageId() {
+        return image==null? null: image.getId();
+    }
+    public File getImage() {
+        return image;
+    }
+
+    public void setImage(File image) {
+        this.image = image;
     }
 
 

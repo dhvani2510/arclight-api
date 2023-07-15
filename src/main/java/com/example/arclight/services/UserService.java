@@ -12,18 +12,16 @@ import com.example.arclight.models.users.ProfileRequest;
 import com.example.arclight.models.users.ProfileResponse;
 import com.example.arclight.repositories.UserRepository;
 import com.example.arclight.shared.exceptions.ArclightException;
-import com.example.arclight.shared.helpers.HttpHelper;
-import jakarta.persistence.EntityExistsException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.HashMap;
 import java.util.List;
@@ -35,21 +33,23 @@ public class UserService {
     private  final JwtService jwtService;
     private  final AuthenticationManager authenticationManager;
     private  final PasswordEncoder passwordEncoder;
+    private  final  FileService fileService;
 
     private static final Logger logger= LoggerFactory.getLogger(UserService.class);
 
     @Autowired
-    public  UserService(UserRepository userRepository, JwtService jwtService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder){
+    public  UserService(UserRepository userRepository, JwtService jwtService, AuthenticationManager authenticationManager, PasswordEncoder passwordEncoder, FileService fileService){
         this.userRepository=userRepository;
         this.jwtService = jwtService;
         this.authenticationManager = authenticationManager;
         this.passwordEncoder = passwordEncoder;
+        this.fileService = fileService;
     }
     public List<UserModel> GetUsers(){
 
         List<User> users= userRepository.findAll();
         List<UserModel> result = users.stream()
-                .map(u -> new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age))
+                .map(u -> new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age,u.getImageId()))
                 .toList();
         return result;
     }
@@ -58,10 +58,10 @@ public class UserService {
         logger.info("Getting user {} profile",id);
 
         var user= userRepository.findById(id).orElseThrow(()-> new ArclightException("User not found"));
-        return new UserModel(user.Id,user.firstName, user.lastName,user.birthDay,user.email, user.Age);
+        return new UserModel(user.Id,user.firstName, user.lastName,user.birthDay,user.email, user.Age,user.getImageId());
     }
 
-   public ProfileResponse UpdateProfile(ProfileRequest profileRequest) throws ArclightException {
+   public ProfileResponse UpdateProfile(ProfileRequest profileRequest) throws ArclightException, IOException {
        if(StringIsNullOrEmpty(profileRequest.getFirstName()))
            throw new ArclightException("First name is empty");
        if(StringIsNullOrEmpty(profileRequest.getFirstName()))
@@ -76,14 +76,20 @@ public class UserService {
            logger.error("User {} is not authenticated", details);
            throw new ArclightException("user is not authenticated");
        }
-       var user = userRepository.findByEmail(auth.getName()).orElseThrow(()-> new ArclightException("User not found")); // name should contain the enail
+       var user = userRepository.findByEmail(auth.getName())
+               .orElseThrow(()-> new ArclightException("User not found")); // name should contain the enail
        //var user= (User)auth.getPrincipal();//var user= userRepository.findById(((User)auth.getPrincipal()))
 
+       if(profileRequest.getBirthDay()!=null)
        user.birthDay= profileRequest.getBirthDay();
        user.firstName= profileRequest.getFirstName();
        user.lastName= profileRequest.getLastName();
+       var image= fileService.Upload(profileRequest.getImage());
+       user.setImage(image);
+       userRepository.save(user);
 
-         return new ProfileResponse(user.firstName, user.lastName,"/api/v1/files/{id}", user.birthDay);
+       logger.info("User profile updated");
+       return new ProfileResponse(user.firstName, user.lastName,image.getUrl(), user.birthDay);
      }
 
     public  UserModel GetUser() throws ArclightException {
@@ -101,7 +107,7 @@ public class UserService {
         if(u== null)
             throw  new ArclightException("User not found");
 
-        var result= new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age);
+        var result= new UserModel(u.Id,u.firstName, u.lastName,u.birthDay,u.email, u.Age,u.getImageId());
         return result;
     }
 
@@ -111,7 +117,7 @@ public class UserService {
         // Check if auto mapper exist in Java
         if(StringIsNullOrEmpty(registerRequest.getEmail()))
             throw  new ArclightException("Email is empty");
-        if(emailIsValid(registerRequest.getEmail()))
+        if(!emailIsValid(registerRequest.getEmail()))
             throw  new ArclightException("Email is not valid");
         if(StringIsNullOrEmpty(registerRequest.getPassword()))
             throw new ArclightException("Password is empty");

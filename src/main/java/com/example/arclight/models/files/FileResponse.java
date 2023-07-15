@@ -1,6 +1,7 @@
 package com.example.arclight.models.files;
 
 import com.example.arclight.entities.File;
+import com.example.arclight.shared.helpers.StringHelper;
 
 public class FileResponse
 {
@@ -14,9 +15,9 @@ public class FileResponse
         this.url = url;
     }
     public  FileResponse(File file){
-        id= file.Id;
-        name=file.Name;
-        url= "/api/v1/files/" + file.Id;
+        id= file.getId();
+        name=file.getName();
+        url= StringHelper.GetFileUrl(file.getId());
     }
 
     public Long getId() {

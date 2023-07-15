@@ -1,5 +1,6 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.shared.helpers.StringHelper;
 import jakarta.persistence.*;
 
 @Entity
@@ -11,12 +12,11 @@ public class File extends  BaseEntity
     private Long Id;
     private String name ;
     private String contentType ;// Image, Audio, Video
+    @Column(length = 10485760 ) //10MB
     private byte[] bytes ;
     private Long sizeInBytes ;
 
-//    public  File(){
-//
-//    }
+    public  File(){}
 
     public File(String name, String contentType, byte[] bytes, Long sizeInBytes) {
         this.name = name;
@@ -63,5 +63,9 @@ public class File extends  BaseEntity
 
     public void setSizeInBytes(Long sizeInBytes) {
         this.sizeInBytes = sizeInBytes;
+    }
+
+    public String getUrl(){
+        return StringHelper.GetFileUrl(this.getId());
     }
 }
