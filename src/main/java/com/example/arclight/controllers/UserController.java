@@ -6,6 +6,8 @@ import com.example.arclight.models.UserModel;
 import com.example.arclight.models.users.ProfileRequest;
 import com.example.arclight.services.UserService;
 import com.example.arclight.shared.exceptions.ArclightException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -19,6 +21,7 @@ import java.util.List;
 @RequestMapping(path="api/v1/users")
 public class UserController {
     private  final  UserService userService;
+    private static final Logger logger= LoggerFactory.getLogger(UserController.class);
     @Autowired
     public  UserController(UserService userService){
         this.userService= userService;
@@ -39,19 +42,18 @@ public class UserController {
             return ResponseModel.Ok("My user profile fetched", user);
         }
         catch (ArclightException e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseModel.Fail(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         catch (Exception e){
-            return new ResponseEntity("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseModel.Fail("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
     @RequestMapping(
             path = "profile",
-            method = RequestMethod.POST
-            , consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
     )
-     //@ModelAttribute //@RequestParam("file")MultipartFile file // TODO implement the picture part, upload is complex
     public ResponseEntity<ResponseModel> UpdateProfile(@ModelAttribute ProfileRequest profileRequest)
     {
         try{
@@ -59,10 +61,12 @@ public class UserController {
             return ResponseModel.Ok("Profile updated successfully", user);
         }
         catch (ArclightException e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            logger.error(e.getMessage(),e);
+            return ResponseModel.Fail(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         catch (Exception e){
-            return new ResponseEntity("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
+            logger.error(e.getMessage(),e);
+            return  ResponseModel.Fail("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
     @GetMapping("{id}")
@@ -73,11 +77,10 @@ public class UserController {
             return ResponseModel.Ok("User profile fetched", user);
         }
         catch (ArclightException e){
-            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+            return ResponseModel.Fail(e.getMessage(), HttpStatus.BAD_REQUEST);
         }
         catch (Exception e){
-            return new ResponseEntity("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseModel.Fail("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
-
 }

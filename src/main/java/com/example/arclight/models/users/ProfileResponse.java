@@ -1,5 +1,9 @@
 package com.example.arclight.models.users;
 
+import com.example.arclight.entities.User;
+import com.example.arclight.entities.datatypes.LanguageOption;
+import com.example.arclight.shared.helpers.StringHelper;
+
 import java.time.LocalDate;
 
 public class ProfileResponse
@@ -7,7 +11,8 @@ public class ProfileResponse
     private  String firstName;
     private  String lastName;
     private String image;
-    private LocalDate birthDay;
+    private LocalDate birthDate;
+    private LanguageOption secondaryLanguage;
 
     public String getFirstName() {
         return firstName;
@@ -33,18 +38,28 @@ public class ProfileResponse
         this.image = image;
     }
 
-    public LocalDate getBirthDay() {
-        return birthDay;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setBirthDay(LocalDate birthDay) {
-        this.birthDay = birthDay;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
-    public ProfileResponse(String firstName, String lastName, String image, LocalDate birthDay) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.image = image;
-        this.birthDay = birthDay;
+    public ProfileResponse(User user)
+    {
+        this.firstName = user.firstName;
+        this.lastName = user.lastName;
+        this.image = StringHelper.GetFileUrl(user.getImageId());
+        this.birthDate = user.birthDate;
+        this.secondaryLanguage=user.getSecondaryLanguage();
+    }
+
+    public LanguageOption getSecondaryLanguage() {
+        return secondaryLanguage;
+    }
+
+    public void setSecondaryLanguage(LanguageOption secondaryLanguage) {
+        this.secondaryLanguage = secondaryLanguage;
     }
 }

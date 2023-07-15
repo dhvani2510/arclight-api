@@ -1,5 +1,6 @@
 package com.example.arclight.models.users;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -9,14 +10,15 @@ public class ProfileRequest
     private  String firstName;
     private  String lastName;
     private MultipartFile image;
-    private LocalDate birthDay;
+    private LocalDate birthDate;
+    private LanguageOption secondaryLanguage;
 
    public ProfileRequest(String firstName, String lastName, MultipartFile image, LocalDate birthDay)
     {
         this.firstName = firstName;
         this.lastName = lastName;
         this.image = image;
-        this.birthDay = birthDay;
+        this.birthDate = birthDay;
     }
 
     public String getFirstName() {
@@ -35,12 +37,12 @@ public class ProfileRequest
         this.lastName = lastName;
     }
 
-    public LocalDate getBirthDay() {
-        return birthDay;
+    public LocalDate getBirthDate() {
+        return birthDate;
     }
 
-    public void setBirthDay(LocalDate birthDay) {
-        this.birthDay = birthDay;
+    public void setBirthDate(LocalDate birthDate) {
+        this.birthDate = birthDate;
     }
 
     public MultipartFile getImage() {
@@ -49,5 +51,13 @@ public class ProfileRequest
 
     public void setImage(MultipartFile image) {
         this.image = image;
+    }
+
+    public LanguageOption getSecondaryLanguage() {
+        return secondaryLanguage;
+    }
+
+    public void setSecondaryLanguage(LanguageOption secondaryLanguage) {
+        this.secondaryLanguage = secondaryLanguage;
     }
 }
