@@ -1,5 +1,6 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.models.translation.TranslationRequest;
 import jakarta.persistence.*;
 
@@ -60,5 +61,11 @@ public class Translation extends  BaseEntity
 
     public void setId(Long id) {
         Id = id;
+    }
+
+    public String translate(LanguageOption languageOption) {
+        return  languageOption== LanguageOption.Hindi? hindi:
+                languageOption== LanguageOption.French? french:
+                        english;
     }
 }
