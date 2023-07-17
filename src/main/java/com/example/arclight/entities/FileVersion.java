@@ -27,6 +27,15 @@ public class FileVersion extends BaseEntity
         this.french=french;
     }
 
+    public void Update(File english, File hindi, File french){
+        if(english!=null)
+        this.english=english;
+        if(hindi!=null)
+        this.hindi=hindi;
+        if(french!=null)
+        this.french=french;
+    }
+
     public String translate(LanguageOption languageOption) {
         if(this==null)
             return null;
