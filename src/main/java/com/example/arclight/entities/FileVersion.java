@@ -1,5 +1,6 @@
 package com.example.arclight.entities;
 
+import com.example.arclight.entities.datatypes.LanguageOption;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.*;
@@ -19,12 +20,20 @@ public class FileVersion extends BaseEntity
     @OneToOne(cascade = CascadeType.PERSIST)
     private File french;
 
+    public  FileVersion(){}
     public FileVersion(File english, File hindi, File french){
         this.english=english;
         this.hindi=hindi;
         this.french=french;
     }
 
+    public String translate(LanguageOption languageOption) {
+        if(this==null)
+            return null;
+        return  languageOption== LanguageOption.Hindi? hindi.getUrl():
+               languageOption== LanguageOption.French? french.getUrl():
+                        english.getUrl();
+    }
     public Long getId() {
         return id;
     }
