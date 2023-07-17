@@ -54,45 +54,67 @@ public class FileService
 
         if(multipartFile==null)
             throw  new ArclightException("File is empty");
+        //Get user context?
+        var existingFile= fileRepository.findByNameAndContentTypeAndSizeInBytes(multipartFile.getOriginalFilename()
+                ,multipartFile.getContentType(), multipartFile.getSize());
+        if(existingFile!=null){
+            logger.info("File {} already exists", existingFile.getId());
+            return existingFile;
+        }
         var file= new File(multipartFile.getOriginalFilename(),multipartFile.getContentType(),multipartFile.getBytes(),multipartFile.getSize());
         fileRepository.save(file);
         return  file;
     }
 
 
+    public  FileVersionResponse GetVersion(Long id) throws ArclightException {
+        logger.info("User is getting files versions");
+        var fileVersion= fileVersionRepository.findById(id)
+                .orElseThrow(()->  new ArclightException("File versions not found"));
+        return new FileVersionResponse(fileVersion);
+    }
     public FileVersionResponse AddVersion(FileVersionRequest fileVersionRequest) throws ArclightException, IOException {
         logger.info("User is uploading files versions");
+
+        if(fileVersionRequest.getEnglish()==null
+                || fileVersionRequest.getHindi()==null || fileVersionRequest.getFrench()==null)
+            throw new ArclightException("Files are empty");
+
+        var english= Upload(fileVersionRequest.getEnglish());
+        var hindi= Upload(fileVersionRequest.getHindi());
+        var french= Upload(fileVersionRequest.getFrench());
+
+        var fileVersion= new FileVersion(english, hindi, french);
+        fileVersionRepository.save(fileVersion);
+        logger.info("File version added successfully");
+        return new FileVersionResponse(fileVersion);
+    }
+
+    public FileVersionResponse UpdateVersion(Long id, FileVersionRequest fileVersionRequest) throws ArclightException, IOException {
+        logger.info("User is updating files version {}", id);
 
         if(fileVersionRequest.getEnglish()==null
                 && fileVersionRequest.getHindi()==null && fileVersionRequest.getFrench()==null)
             throw new ArclightException("Files are empty");
 
-        var files =List.of(
-                new File(fileVersionRequest.getEnglish().getName(),
-                       fileVersionRequest.getEnglish().getContentType(),
-                       fileVersionRequest.getEnglish().getBytes(),
-                       fileVersionRequest.getEnglish().getSize()
-                ),
-                new File(fileVersionRequest.getHindi().getName(),
-                        fileVersionRequest.getHindi().getContentType(),
-                        fileVersionRequest.getHindi().getBytes(),
-                        fileVersionRequest.getHindi().getSize()
-                ),
-                new File(fileVersionRequest.getFrench().getName(),
-                        fileVersionRequest.getFrench().getContentType(),
-                        fileVersionRequest.getFrench().getBytes(),
-                        fileVersionRequest.getFrench().getSize()
-                )
-        );
+        var fileVersion= fileVersionRepository.findById(id)
+                .orElseThrow(()-> new ArclightException("File version not found"));
 
+        var english= Upload(fileVersionRequest.getEnglish());
+        var hindi= Upload(fileVersionRequest.getHindi());
+        var french= Upload(fileVersionRequest.getFrench());
 
-        fileRepository.saveAll(files);
+         //TODO delete the old files?
+        if(english!=null)
+            fileRepository.save(english);
+        if(hindi!=null)
+            fileRepository.save(hindi);
+        if(french!=null)
+            fileRepository.save(french);
 
-        var fileVersion= new FileVersion(files.get(0), files.get(1), files.get(1));
+        fileVersion.Update(english, hindi, french);
         fileVersionRepository.save(fileVersion);
-        return new FileVersionResponse(fileVersion.getId(),
-                fileVersion.getEnglish().getId(),
-                fileVersion.getHindi().getId(),
-                fileVersion.getFrench().getId());
+        logger.info("File version updated successfully");
+        return new FileVersionResponse(fileVersion);
     }
 }

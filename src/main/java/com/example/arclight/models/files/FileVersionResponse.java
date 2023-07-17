@@ -1,5 +1,6 @@
 package com.example.arclight.models.files;
 
+import com.example.arclight.entities.FileVersion;
 import com.example.arclight.shared.helpers.StringHelper;
 
 public class FileVersionResponse
@@ -14,6 +15,13 @@ public class FileVersionResponse
         this.english = StringHelper.GetFileUrl(englishId);
         this.hindi = StringHelper.GetFileUrl(hindiId);
         this.french = StringHelper.GetFileUrl(frenchId);
+    }
+
+    public FileVersionResponse(FileVersion fileVersion) {
+        Id = fileVersion.getId();
+        this.english = StringHelper.GetFileUrl(fileVersion.getEnglish().getId());
+        this.hindi = StringHelper.GetFileUrl(fileVersion.getHindi().getId());
+        this.french = StringHelper.GetFileUrl(fileVersion.getFrench().getId());
     }
 
 
