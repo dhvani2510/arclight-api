@@ -12,7 +12,6 @@ public class QuizResponse
     private  String description;
     //@Enumerated(EnumType.STRING)
     private Category category;
-    private  double questionsCount; //Score
 
     public List<ImageToTitleQuestion> getQuestions() {
         return questions;
@@ -30,7 +29,6 @@ public class QuizResponse
         this.title = quiz.getTitle();
         this.description = quiz.getDescription();
         this.category = quiz.getCategory();
-        this.questionsCount=0;
         this.durationInMinutes = quiz.getDurationInMinutes();
     }
 
@@ -39,7 +37,6 @@ public class QuizResponse
         this.title = quiz.getTitle();
         this.description = quiz.getDescription();
         this.category = quiz.getCategory();
-        this.questionsCount=questions.stream().count();
         this.durationInMinutes = quiz.getDurationInMinutes();
         this.questions=questions;
     }
@@ -81,13 +78,5 @@ public class QuizResponse
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public double getQuestionsCount() {
-        return questionsCount;
-    }
-
-    public void setQuestionsCount(double questionsCount) {
-        this.questionsCount = questionsCount;
     }
 }
