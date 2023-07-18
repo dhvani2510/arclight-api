@@ -1,7 +1,6 @@
 package com.example.arclight.configurations;
 
 import com.example.arclight.entities.User;
-import com.example.arclight.models.UserContext;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -39,7 +38,7 @@ public class JwtService
 
         return Jwts.builder().setClaims(extraClaims)
                 .setIssuer("Arclight.com")
-                .setId(user.Id.toString())
+                .setId(user.id.toString())
                 .setSubject(user.email)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
                 .setExpiration( new Date(System.currentTimeMillis() +1000*60 *60*24)) // 24 hours
