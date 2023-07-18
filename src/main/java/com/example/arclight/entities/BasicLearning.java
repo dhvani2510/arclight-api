@@ -17,6 +17,7 @@ public class BasicLearning extends  BaseEntity
     @Enumerated(EnumType.STRING)
     private Category category;
     @OneToOne(cascade = CascadeType.PERSIST, optional = true)
+    @JoinColumn(unique = false)
     private FileVersion image;
 
     public  BasicLearning(){}

@@ -1,9 +1,11 @@
 package com.example.arclight.services;
 
+import com.example.arclight.ArclightApplication;
 import com.example.arclight.configurations.JwtService;
 import com.example.arclight.entities.User;
 import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.entities.datatypes.Role;
+import com.example.arclight.models.UserContext;
 import com.example.arclight.models.UserModel;
 import com.example.arclight.models.auth.AuthenticationRequest;
 import com.example.arclight.models.auth.AuthenticationResponse;
@@ -100,15 +102,7 @@ public class UserService {
      }
 
     public  UserModel GetUser() throws ArclightException {
-        logger.info("Getting user profile");
-       var auth= SecurityContextHolder.getContext().getAuthentication();
-       if(!auth.isAuthenticated()){ // toggle this
-           var details= auth.getDetails();
-           logger.error("User {} is not authenticated", details);
-           throw  new ArclightException("user is not authenticated");
-       }
-
-        var user= (User)auth.getPrincipal();
+        var user=GetUserContext();
 //        var u= userRepository.findById(user.Id)
 //                .orElseThrow(()-> new ArclightException("User not found"));
         if(user== null)
@@ -116,6 +110,24 @@ public class UserService {
 
         var result= new UserModel(user);
         return result;
+    }
+
+    public  User GetUserContext() throws ArclightException {
+        logger.info("Getting user profile");
+        var auth= SecurityContextHolder.getContext().getAuthentication();
+        if(!auth.isAuthenticated()){ // toggle this
+            var details= auth.getDetails();
+            logger.error("User {} is not authenticated", details);
+            throw  new ArclightException("user is not authenticated");
+        }
+
+        return (User)auth.getPrincipal();
+    }
+
+    public  User GetUserInstance() throws ArclightException {
+        var user= GetUserContext();
+        return userRepository.findById(user.id)
+                .orElseThrow(()-> new ArclightException("User not found"));
     }
 
     public RegisterResponse register(RegisterRequest registerRequest) throws ArclightException {
@@ -151,7 +163,7 @@ public class UserService {
 
         userRepository.save(user);
 
-        var response= new RegisterResponse(user.Id,user.email,user.firstName, user.lastName);
+        var response= new RegisterResponse(user.id,user.email,user.firstName, user.lastName);
         return  response;
     }
 

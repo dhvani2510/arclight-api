@@ -59,7 +59,7 @@ public class FileService
                 ,multipartFile.getContentType(), multipartFile.getSize());
         if(existingFile!=null){
             logger.info("File {} already exists", existingFile.getId());
-            return existingFile;
+            //return existingFile;
         }
         var file= new File(multipartFile.getOriginalFilename(),multipartFile.getContentType(),multipartFile.getBytes(),multipartFile.getSize());
         fileRepository.save(file);

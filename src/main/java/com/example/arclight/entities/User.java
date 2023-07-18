@@ -19,7 +19,7 @@ public class User extends  BaseEntity implements UserDetails
 {
     @Id
     @GeneratedValue(strategy=GenerationType.IDENTITY)
-    public Long Id;
+    public Long id;
     public  String firstName;
     public  String lastName;
     public LocalDate birthDate;
@@ -102,7 +102,7 @@ public class User extends  BaseEntity implements UserDetails
     private User(UserBuilder builder) {
         this.firstName=builder.firstName;
         this.lastName=builder.lastName;
-        this.Id=builder.Id;
+        this.id =builder.Id;
         this.email=builder.Email;
         this.Password= builder.Password;
         this.Role=builder.Role;

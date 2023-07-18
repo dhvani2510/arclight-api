@@ -3,6 +3,8 @@ package com.example.arclight.models.quiz;
 import com.example.arclight.entities.Quiz;
 import com.example.arclight.entities.datatypes.Category;
 
+import java.util.List;
+
 public class QuizResponse
 {
     private Long id;
@@ -10,7 +12,16 @@ public class QuizResponse
     private  String description;
     //@Enumerated(EnumType.STRING)
     private Category category;
-    private  double questionsCount; //Score
+
+    public List<ImageToTitleQuestion> getQuestions() {
+        return questions;
+    }
+
+    public void setQuestions(List<ImageToTitleQuestion> questions) {
+        this.questions = questions;
+    }
+
+    private List<ImageToTitleQuestion> questions;
     private  int durationInMinutes;
 
     public  QuizResponse(Quiz quiz){
@@ -18,8 +29,16 @@ public class QuizResponse
         this.title = quiz.getTitle();
         this.description = quiz.getDescription();
         this.category = quiz.getCategory();
-        this.questionsCount=0;
         this.durationInMinutes = quiz.getDurationInMinutes();
+    }
+
+    public  QuizResponse(Quiz quiz, List<ImageToTitleQuestion> questions){
+        this.id= quiz.getId();
+        this.title = quiz.getTitle();
+        this.description = quiz.getDescription();
+        this.category = quiz.getCategory();
+        this.durationInMinutes = quiz.getDurationInMinutes();
+        this.questions=questions;
     }
     public String getTitle() {
         return title;
@@ -59,13 +78,5 @@ public class QuizResponse
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public double getQuestionsCount() {
-        return questionsCount;
-    }
-
-    public void setQuestionsCount(double questionsCount) {
-        this.questionsCount = questionsCount;
     }
 }

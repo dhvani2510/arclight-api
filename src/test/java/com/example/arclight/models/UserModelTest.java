@@ -65,7 +65,7 @@ class UserModelTest {
     void testUserConstructor() {
         // Arrange
         User user = new User();
-        user.Id = 1L;
+        user.id = 1L;
         user.firstName = "A";
         user.lastName = "B";
         user.birthDate = LocalDate.of(2000,1,1);
@@ -76,7 +76,7 @@ class UserModelTest {
         UserModel userModel = new UserModel(user);
 
         // Assert
-        assertEquals(user.Id, userModel.id);
+        assertEquals(user.id, userModel.id);
         assertEquals(user.firstName, userModel.firstName);
         assertEquals(user.lastName, userModel.lastName);
         assertEquals(user.birthDate, userModel.birthDate);

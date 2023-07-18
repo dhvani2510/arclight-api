@@ -29,7 +29,7 @@ public class UserModel {
         this.image= StringHelper.GetFileUrl(imageId);
     }
     public  UserModel(User user)
-    {   this.id = user.Id;
+    {   this.id = user.id;
         this.firstName= user.firstName;
         this.lastName= user.lastName;
         this.email=user.getEmail();
