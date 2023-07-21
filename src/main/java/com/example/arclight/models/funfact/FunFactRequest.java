@@ -1,6 +1,5 @@
 package com.example.arclight.models.funfact;
 
-import com.example.arclight.entities.Translation;
 import com.example.arclight.entities.datatypes.Category;
 
 public class FunFactRequest
@@ -8,8 +7,7 @@ public class FunFactRequest
     private Long titleId;
     private Long descriptionId;
 
-    private Long  imageVersionId;// TODO to be implemeneted later
-    private Category category;
+    private Long imageId;
 
     public Long getTitleId() {
         return titleId;
@@ -27,18 +25,11 @@ public class FunFactRequest
         this.descriptionId = descriptionId;
     }
 
-    public Category getCategory() {
-        return category;
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-    public Long getImageVersionId() {
-        return imageVersionId;
-    }
-
-    public void setImageVersionId(Long imageVersionId) {
-        this.imageVersionId = imageVersionId;
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
     }
 }

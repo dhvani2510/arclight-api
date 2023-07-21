@@ -106,6 +106,7 @@ public class User extends  BaseEntity implements UserDetails
         this.email=builder.Email;
         this.Password= builder.Password;
         this.Role=builder.Role;
+        this.setCreatedAt(LocalDateTime.now());
     }
 
     public void setPassword(String password) {

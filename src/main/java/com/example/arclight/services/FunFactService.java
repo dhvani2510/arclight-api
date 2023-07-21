@@ -6,10 +6,11 @@ import com.example.arclight.entities.datatypes.Category;
 import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.models.funfact.FunFactRequest;
 import com.example.arclight.models.funfact.FunFactResponse;
+import com.example.arclight.repositories.FileRepository;
 import com.example.arclight.repositories.FunFactRepository;
-import com.example.arclight.repositories.FileVersionRepository;
 import com.example.arclight.repositories.TranslationRepository;
 import com.example.arclight.shared.exceptions.ArclightException;
+import org.hibernate.boot.archive.spi.ArchiveException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,24 +25,23 @@ public class FunFactService
     private  final FunFactRepository funFactRepository;
     private  final TranslationRepository translationRepository;
 
-    private  final FileVersionRepository fileVersionRepository;
+    private  final FileRepository fileRepository;
     private static final Logger logger= LoggerFactory.getLogger(FunFactService.class);
 
     @Autowired
-    public  FunFactService(FunFactRepository funFactRepository, TranslationRepository translationRepository, FileVersionRepository fileVersionRepository)
+    public  FunFactService(FunFactRepository funFactRepository, TranslationRepository translationRepository, FileRepository fileRepository)
     {
         this.funFactRepository = funFactRepository;
         this.translationRepository = translationRepository;
-        this.fileVersionRepository = fileVersionRepository;
+        this.fileRepository = fileRepository;
     }
 
-    public List<FunFactResponse> GetBycategory(Category category) throws ArclightException {
+    public FunFactResponse GetRandom() throws ArclightException {
         var languageOption= GetSecondaryLangauage();
-        List<FunFact> FunFacts= funFactRepository.findByCategory(category);
-        List<FunFactResponse> result = FunFacts.stream()
-                .map(u -> new FunFactResponse(u,languageOption))
-                .toList();
-        return result;
+        var funFact= funFactRepository.findRandom();
+        if(funFact.isEmpty())
+            return null;
+        return new FunFactResponse(funFact.get(),languageOption);
     }
 
 
@@ -54,32 +54,27 @@ public class FunFactService
     }
 
     public FunFactResponse Create(FunFactRequest FunFactRequest) throws ArclightException {
-        logger.info("User adding fun fact with titleId {}, descriotion id {}, category {}"
-                , FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId(),
-                FunFactRequest.getCategory());
+        logger.info("User adding fun fact with titleId {}, description id {}"
+                , FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId());
 
         ValidateFunFactRequest(FunFactRequest);
-        var title= translationRepository.getById(FunFactRequest.getTitleId());
-        if(title==null)
-            throw  new ArclightException("Title not found");
+        var title= translationRepository.findById(FunFactRequest.getTitleId())
+                .orElseThrow(()->new ArclightException("Title not found") );
 
-        var description= translationRepository.getById(FunFactRequest.getDescriptionId());
-        if(description==null)
-            throw  new ArclightException("Description not found");
+        var description= translationRepository.findById(FunFactRequest.getDescriptionId())
+                .orElseThrow(()-> new ArclightException("Description not found"));
 
-        var FunFact=funFactRepository.findByTitle_IdAndDescription_IdAndCategory(
-                FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId(),
-                FunFactRequest.getCategory());
+        var FunFact=funFactRepository.findByTitle_IdAndDescription_Id(FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId());
 
         if(FunFact!=null){
             logger.error("Fun Fact already exists");
             throw  new ArclightException("Fun Fact already exists");
         }
 
-        var fileVersion= fileVersionRepository.findById(FunFactRequest.getImageVersionId())
-                .orElseThrow(()->new ArclightException("File version not found"));
-        //TODO add the file version implementation
-        FunFact= new FunFact(title, description, FunFactRequest.getCategory(), fileVersion);
+        var image= fileRepository.findById(FunFactRequest.getImageId())
+                .orElseThrow(()->new ArclightException("File not found"));
+
+        FunFact= new FunFact(title, description, image);
 
         funFactRepository.save(FunFact);
         var languageOption= GetSecondaryLangauage();
@@ -87,24 +82,20 @@ public class FunFactService
     }
 
     public FunFactResponse Update(Long id,FunFactRequest FunFactRequest) throws ArclightException {
-        logger.info("User is updating Fun Fact {} with titleId {}, descriotion id {}, category {}"
-               ,id , FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId(),
-                FunFactRequest.getCategory());
+        logger.info("User is updating Fun Fact {} with titleId {}, description id {}"
+               ,id , FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId());
 
         ValidateFunFactRequest(FunFactRequest);
-        var title= translationRepository.getById(FunFactRequest.getTitleId());
-        if(title==null)
-            throw  new ArclightException("Title not found");
+        var title= translationRepository.findById(FunFactRequest.getTitleId())
+                .orElseThrow(()-> new ArclightException("Title not found"));
 
-        var description= translationRepository.getById(FunFactRequest.getDescriptionId());
-        if(description==null)
-            throw  new ArclightException("Description not found");
+        var description= translationRepository.findById(FunFactRequest.getDescriptionId())
+                .orElseThrow(()-> new ArclightException("Description not found"));
 
-        var FunFact=funFactRepository.findByTitle_IdAndDescription_IdAndCategory(
-                FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId(),
-                FunFactRequest.getCategory());
+        var FunFact=funFactRepository.findByTitle_IdAndDescription_Id(
+                FunFactRequest.getTitleId(),FunFactRequest.getDescriptionId());
 
-        if(FunFact!=null){
+        if(FunFact!=null && FunFact.getId() != id){
             logger.error("Fun Fact Learning already exists");
             throw  new ArclightException("Fun Fact already exists");
         }
@@ -112,8 +103,10 @@ public class FunFactService
         var updatedFunFact= funFactRepository.findById(id)
                 .orElseThrow(()-> new ArclightException("Fun Fact not found"));
 
-        //TODO add the file version implementation
-        updatedFunFact.update(title,description,FunFactRequest.getCategory(),null);
+        var image= fileRepository.findById(FunFactRequest.getImageId())
+                .orElseThrow(()->new ArclightException("File not found"));
+
+        updatedFunFact.update(title,description,image);
 
         funFactRepository.save(updatedFunFact);
         var languageOption= GetSecondaryLangauage();
@@ -133,8 +126,6 @@ public class FunFactService
         return u.getSecondaryLanguage();
     }
     private  void ValidateFunFactRequest(FunFactRequest FunFactRequest) throws ArclightException {
-        if(FunFactRequest.getCategory()==null)
-            throw  new ArclightException("Category is empty");
         if(FunFactRequest.getTitleId()==null)
             throw  new ArclightException("Title id is empty");
         if(FunFactRequest.getDescriptionId()==null)

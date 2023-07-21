@@ -1,7 +1,6 @@
 package com.example.arclight.models.funfact;
 
 import com.example.arclight.entities.FunFact;
-import com.example.arclight.entities.datatypes.Category;
 import com.example.arclight.entities.datatypes.LanguageOption;
 
 public class FunFactResponse
@@ -10,16 +9,6 @@ public class FunFactResponse
     private  String title;
     private String description;
     private  String image;
-    //@Enumerated(EnumType.STRING)
-    private Category category;
-
-    public FunFactResponse(Long id, String title, String description, String image, Category category) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.image = image;
-        this.category= category;
-    }
 
     public FunFactResponse(FunFact funfact, LanguageOption languageOption){
         if(funfact==null)
@@ -28,8 +17,7 @@ public class FunFactResponse
         this.title = funfact.getTitle().translate(languageOption);
         this.description = funfact.getDescription().translate(languageOption);
         if(funfact.getImage()!=null)
-            this.image = funfact.getImage().translate(languageOption);
-        this.category= funfact.getCategory();
+            this.image = funfact.getImage().getUrl();
     }
 
     public Long getId() {
@@ -62,13 +50,5 @@ public class FunFactResponse
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
     }
 }

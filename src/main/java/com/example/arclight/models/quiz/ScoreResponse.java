@@ -5,13 +5,11 @@ import com.example.arclight.entities.Score;
 public class ScoreResponse
 {
     private  Long id;
-    private  Long quizId;
    private double mark;
    private  double total;
 
    public ScoreResponse(Score score){
        this.id= score.getId();
-       this.quizId=score.getQuiz().getId();
        this.mark=score.getMark();
        this.total=score.getTotal();
    }
@@ -24,13 +22,6 @@ public class ScoreResponse
         this.id = id;
     }
 
-    public Long getQuizId() {
-        return quizId;
-    }
-
-    public void setQuizId(Long quizId) {
-        this.quizId = quizId;
-    }
 
     public double getMark() {
         return mark;

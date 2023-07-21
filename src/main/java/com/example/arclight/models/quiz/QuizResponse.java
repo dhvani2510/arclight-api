@@ -1,6 +1,5 @@
 package com.example.arclight.models.quiz;
 
-import com.example.arclight.entities.Quiz;
 import com.example.arclight.entities.datatypes.Category;
 
 import java.util.List;
@@ -13,31 +12,19 @@ public class QuizResponse
     //@Enumerated(EnumType.STRING)
     private Category category;
 
-    public List<ImageToTitleQuestion> getQuestions() {
+    public List<DescriptionToImageQuestion> getQuestions() {
         return questions;
     }
 
-    public void setQuestions(List<ImageToTitleQuestion> questions) {
+    public void setQuestions(List<DescriptionToImageQuestion> questions) {
         this.questions = questions;
     }
 
-    private List<ImageToTitleQuestion> questions;
+    private List<DescriptionToImageQuestion> questions;
     private  int durationInMinutes;
 
-    public  QuizResponse(Quiz quiz){
-        this.id= quiz.getId();
-        this.title = quiz.getTitle();
-        this.description = quiz.getDescription();
-        this.category = quiz.getCategory();
-        this.durationInMinutes = quiz.getDurationInMinutes();
-    }
 
-    public  QuizResponse(Quiz quiz, List<ImageToTitleQuestion> questions){
-        this.id= quiz.getId();
-        this.title = quiz.getTitle();
-        this.description = quiz.getDescription();
-        this.category = quiz.getCategory();
-        this.durationInMinutes = quiz.getDurationInMinutes();
+    public  QuizResponse(List<DescriptionToImageQuestion> questions){
         this.questions=questions;
     }
     public String getTitle() {

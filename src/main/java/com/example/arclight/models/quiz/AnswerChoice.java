@@ -3,12 +3,12 @@ package com.example.arclight.models.quiz;
 public class AnswerChoice
 {
     private Long id;
-    private  String description;
+    private  String image;
 
     public  AnswerChoice(){}
-    public AnswerChoice(Long id, String description) {
+    public AnswerChoice(Long id, String image) {
         this.id = id;
-        this.description = description;
+        this.image = image;
     }
 
     public Long getId() {
@@ -19,11 +19,11 @@ public class AnswerChoice
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
+    public String getImage() {
+        return image;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setImage(String image) {
+        this.image = image;
     }
 }
