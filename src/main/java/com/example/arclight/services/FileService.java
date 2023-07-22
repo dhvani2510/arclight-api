@@ -32,10 +32,11 @@ public class FileService
         return new FileResponse(file);
     }
 
-    public File Get(Long id){
+    public File Get(Long id) throws ArclightException {
         logger.info("User is getting file {}",id);
 
-        return fileRepository.findById(id).orElseThrow(()-> new ArchiveException("File not found"));
+        return fileRepository.findById(id)
+                .orElseThrow(()-> new ArclightException("File not found"));
     }
 
     public  FileResponse UploadFile(MultipartFile multipartFile) throws ArclightException, IOException {
