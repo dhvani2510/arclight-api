@@ -97,20 +97,16 @@ public class QuizService
         if(count<2)
             return questions;
 
-             var shuffleList= new ArrayList<>(basicLearnings); //basicLearnings.stream().col;
-        //List<BasicLearning> myList = new ArrayList<>(basicLearnings);
-
-
         for(var basicLearning: basicLearnings){
                var description= basicLearning.getDescription().getEnglish();
                if(!StringHelper.StringIsNullOrEmpty(description)){
 
-
+                    var shuffleList= basicLearningRepository.findByCategory(basicLearning.getCategory());
                    // Shuffle the list
                    Collections.shuffle(shuffleList);
 
                    // Get the first four elements
-                   var randomElements = count<4?
+                   var randomElements = shuffleList.stream().count()<4?
                            shuffleList.subList(0,(int)count):
                            shuffleList.subList(0, 4);
 
@@ -119,6 +115,7 @@ public class QuizService
                    var choices= new ArrayList<>(choicesI);
                    var answer=new AnswerChoice(basicLearning.getId(),basicLearning.getImage().getUrl());
                    if(!containsChoiceWithId(choices, answer.getId())){
+                       choices.remove(0);
                        choices.add(answer);
                        Collections.shuffle(choices);
                    }
