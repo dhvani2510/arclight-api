@@ -58,4 +58,17 @@ public class FileService
         fileRepository.save(file);
         return  file;
     }
+
+    public  FileResponse Update(Long id, MultipartFile file) throws ArclightException, IOException {
+        logger.info("User is updating file {}", id);
+
+        var existingFile= fileRepository.findById(id)
+                .orElseThrow(()-> new ArclightException("File not found"));
+
+        existingFile.Update(file);
+
+        fileRepository.save(existingFile);
+        logger.info("File saved successfully");
+        return  new FileResponse(existingFile);
+    }
 }
