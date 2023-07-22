@@ -1,11 +1,8 @@
 package com.example.arclight.models.quiz;
 
-import com.example.arclight.entities.datatypes.QuestionType;
-
 public class AnswerRequest
 {
     private Long id;
-    private QuestionType type;
     private Long ChoiceId;
 
     public Long getId() {
@@ -14,14 +11,6 @@ public class AnswerRequest
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public QuestionType getType() {
-        return type;
-    }
-
-    public void setType(QuestionType type) {
-        this.type = type;
     }
 
     public Long getChoiceId() {

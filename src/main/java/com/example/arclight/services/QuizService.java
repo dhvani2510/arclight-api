@@ -1,12 +1,8 @@
 package com.example.arclight.services;
 
-import com.example.arclight.entities.Quiz;
 import com.example.arclight.entities.Score;
-import com.example.arclight.entities.datatypes.Category;
-import com.example.arclight.entities.datatypes.QuestionType;
 import com.example.arclight.models.quiz.*;
 import com.example.arclight.repositories.BasicLearningRepository;
-import com.example.arclight.repositories.QuizRepository;
 import com.example.arclight.repositories.ScoreRepository;
 import com.example.arclight.shared.exceptions.ArclightException;
 import com.example.arclight.shared.helpers.StringHelper;
@@ -21,70 +17,31 @@ import java.util.List;
 @Service
 public class QuizService
 {
-    private  final QuizRepository quizRepository;
     private  final BasicLearningRepository basicLearningRepository;
     private  final ScoreRepository scoreRepository;
     private  final  BasicLearningService basicLearningService;
     private  final  UserService userService;
 
-    private static final Logger logger= LoggerFactory.getLogger(QuizRepository.class);
+    private static final Logger logger= LoggerFactory.getLogger(QuizService.class);
 
-    public QuizService(QuizRepository quizRepository, BasicLearningService basicLearningService, BasicLearningRepository basicLearningRepository, ScoreRepository scoreRepository, UserService userService) {
-        this.quizRepository = quizRepository;
+    public QuizService(BasicLearningService basicLearningService, BasicLearningRepository basicLearningRepository, ScoreRepository scoreRepository, UserService userService) {
         this.basicLearningRepository = basicLearningRepository;
         this.basicLearningService = basicLearningService;
         this.scoreRepository = scoreRepository;
         this.userService = userService;
     }
 
-    public List<QuizResponse> Get()
-    {
-        logger.info("User is getting all quizzes");
 
-        var quizzes= quizRepository.findAll();
+    public List<DescriptionToImageQuestion> Get() throws ArclightException {
+        logger.info("User is getting quiz");
 
-        List<QuizResponse> result = quizzes.stream()
-                .map(u -> new QuizResponse(u))
-                .toList();
-        return result;
-    }
-
-    public QuizResponse Get(Long id) throws ArclightException {
-        logger.info("User is getting quiz {}",id);
-
-        var quiz= quizRepository.findById(id)
-                .orElseThrow(()-> new ArclightException("Quiz not found"));
-        var questions= GenerateImageToTitleMatchQuestions(quiz.getCategory());
+        var questions= GenerateDescriptionToImageMatchQuestions();
         logger.info("{} questions generated successfully", questions.stream().count());
-        return new QuizResponse(quiz,questions);
-    }
-    public QuizResponse Create(QuizRequest quizRequest) throws ArclightException {
-        logger.info("User is creating a quiz with title {} and category {}", quizRequest.getTitle(), quizRequest.getCategory());
-
-        QuizRequestValidation(quizRequest);
-
-        var quiz= new Quiz(quizRequest);
-        quizRepository.save(quiz);
-       logger.info("Quiz {} created successfully", quiz.getId());
-        return new QuizResponse(quiz);
+        return questions;
     }
 
-    public QuizResponse Update(Long id, QuizRequest quizRequest) throws ArclightException {
-        logger.info("User is updating quiz {} with title {} and category {}"
-                , id, quizRequest.getTitle(), quizRequest.getCategory());
 
-        QuizRequestValidation(quizRequest);
-
-        var quiz= quizRepository.findById(id)
-                .orElseThrow(()-> new ArclightException("Quiz not found"));
-
-        quiz.Update(quizRequest);
-        quizRepository.save(quiz);
-        logger.info("Quiz {} updated successfully", quiz.getId());
-        return new QuizResponse(quiz);
-    }
-
-    public  ScoreResponse Submit(Long id, QuizSubmitRequest quizSubmitRequest) throws ArclightException {
+    public  ScoreResponse Submit(QuizSubmitRequest quizSubmitRequest) throws ArclightException {
         logger.info("User is submitting quiz");
 
         logger.info("Computing the score");
@@ -94,22 +51,17 @@ public class QuizService
         int total=answers.size();
         int mark=0;
         for(AnswerRequest answerRequest: answers){
+            var basicLearning= basicLearningRepository.findById(answerRequest.getId());
 
-            if(answerRequest.getType()==QuestionType.BasicLearning){
-                var basicLearning= basicLearningRepository.findById(answerRequest.getId());
-
-                if(basicLearning!=null && basicLearning.get().getTitle().getId()== answerRequest.getChoiceId())
-                {
-                    mark++;
-                }
+            if(basicLearning!=null && basicLearning.get().getTitle().getId()== answerRequest.getChoiceId())
+            {
+                mark++;
             }
         }
 
-        var quiz= quizRepository.findById(id)
-                .orElseThrow(()-> new ArclightException("Quiz not found"));
         var user= userService.GetUserInstance();
 
-        var score= new Score(quiz,user,mark,total);
+        var score= new Score(user,mark,total);
 
         scoreRepository.save(score);
 
@@ -121,8 +73,7 @@ public class QuizService
       var user= userService.GetUserContext();
       var scores= scoreRepository.findByStudent_Id(user.id);
 
-      var result= scores.stream().map(s-> new ScoreResponse(s)).toList();
-      return result;
+        return scores.stream().map(s-> new ScoreResponse(s)).toList();
     }
 
     private  void QuizRequestValidation(QuizRequest quizRequest) throws ArclightException {
@@ -136,44 +87,40 @@ public class QuizService
             throw  new ArclightException("Duration cannot be zero");
     }
 
-    private  List<ImageToTitleQuestion> GenerateImageToTitleMatchQuestions(Category category) throws ArclightException {
+    private  List<DescriptionToImageQuestion> GenerateDescriptionToImageMatchQuestions() throws ArclightException {
 
           logger.info("Generating the quiz");
 
-        List<ImageToTitleQuestion> questions = new ArrayList<>();
-            var basicLearnings= basicLearningService.GetBycategory(category);
+        List<DescriptionToImageQuestion> questions = new ArrayList<>();
+            var basicLearnings= basicLearningRepository.findRandom10Rows();
             var count=basicLearnings.stream().count();
         if(count<2)
             return questions;
 
-             var shuffleList= new ArrayList<>(basicLearnings); //basicLearnings.stream().col;
-        //List<BasicLearning> myList = new ArrayList<>(basicLearnings);
-
-
         for(var basicLearning: basicLearnings){
-               var image= basicLearning.getImage();
-               if(!StringHelper.StringIsNullOrEmpty(image)){
+               var description= basicLearning.getDescription().getEnglish();
+               if(!StringHelper.StringIsNullOrEmpty(description)){
 
-
+                    var shuffleList= basicLearningRepository.findByCategory(basicLearning.getCategory());
                    // Shuffle the list
                    Collections.shuffle(shuffleList);
 
                    // Get the first four elements
-                   var randomElements = count<4?
+                   var randomElements = shuffleList.stream().count()<4?
                            shuffleList.subList(0,(int)count):
                            shuffleList.subList(0, 4);
 
                    var choicesI = randomElements.stream()
-                           .map(u-> new AnswerChoice(u.getId(),u.getTitle())).toList();
+                           .map(u-> new AnswerChoice(u.getId(),u.getImage().getUrl())).toList();
                    var choices= new ArrayList<>(choicesI);
-                   var answer=new AnswerChoice(basicLearning.getId(),basicLearning.getTitle());
+                   var answer=new AnswerChoice(basicLearning.getId(),basicLearning.getImage().getUrl());
                    if(!containsChoiceWithId(choices, answer.getId())){
+                       choices.remove(0);
                        choices.add(answer);
                        Collections.shuffle(choices);
                    }
 
-                   var question= new ImageToTitleQuestion(basicLearning.getId()
-                           , QuestionType.BasicLearning,image,choices);
+                   var question= new DescriptionToImageQuestion(basicLearning.getId(),description,choices);
                    questions.add(question);
                }
 

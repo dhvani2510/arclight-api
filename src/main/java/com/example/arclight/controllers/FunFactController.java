@@ -1,6 +1,5 @@
 package com.example.arclight.controllers;
 
-import com.example.arclight.entities.datatypes.Category;
 import com.example.arclight.models.ResponseModel;
 import com.example.arclight.models.funfact.FunFactRequest;
 import com.example.arclight.services.FunFactService;
@@ -23,12 +22,13 @@ public class FunFactController
         this.funFactService = funFactService;
     }
 
-    @GetMapping("category/{category}")
-    public ResponseEntity<ResponseModel> GetFunFact(@PathVariable Category category)
+    @GetMapping()
+    public ResponseEntity<ResponseModel> GetRandom()
     {
         try{
-            var funFact=  funFactService.GetBycategory(category);
-            return ResponseModel.Ok("Fun Fact fetched", funFact);
+            var funFact=  funFactService.GetRandom();
+            return funFact==null? ResponseModel.Ok("No fun fact found"):
+                    ResponseModel.Ok("Fun Fact fetched", funFact);
         }
         catch (ArclightException e){
             logger.error(e.getMessage(),e);

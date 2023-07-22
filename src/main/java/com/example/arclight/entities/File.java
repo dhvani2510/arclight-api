@@ -2,6 +2,9 @@ package com.example.arclight.entities;
 
 import com.example.arclight.shared.helpers.StringHelper;
 import jakarta.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @Entity
 @Table
@@ -23,6 +26,13 @@ public class File extends  BaseEntity
         this.contentType = contentType;
         this.bytes = bytes;
         this.sizeInBytes = sizeInBytes;
+    }
+
+    public void Update(MultipartFile file) throws IOException {
+        this.name = file.getOriginalFilename();
+        this.contentType = file.getContentType();
+        this.bytes = file.getBytes();
+        this.sizeInBytes = file.getSize();
     }
 
     public Long getId() {

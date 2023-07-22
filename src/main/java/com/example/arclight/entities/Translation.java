@@ -4,6 +4,8 @@ import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.models.translation.TranslationRequest;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table
 public class Translation extends  BaseEntity
@@ -24,6 +26,7 @@ public class Translation extends  BaseEntity
       this.english=translationRequest.getEnglish();
       this.french= translationRequest.getFrench();
       this.hindi= translationRequest.getHindi();
+        this.setCreatedAt(LocalDateTime.now());
     }
 
 
@@ -64,8 +67,10 @@ public class Translation extends  BaseEntity
     }
 
     public String translate(LanguageOption languageOption) {
+
         return  languageOption== LanguageOption.Hindi? hindi:
                 languageOption== LanguageOption.French? french:
-                        english;
+                        languageOption== LanguageOption.English? english:
+                        null;
     }
 }

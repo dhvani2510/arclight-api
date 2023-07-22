@@ -7,7 +7,7 @@ import com.example.arclight.entities.datatypes.LanguageOption;
 import com.example.arclight.models.basic_learning.BasicLearningRequest;
 import com.example.arclight.models.basic_learning.BasicLearningResponse;
 import com.example.arclight.repositories.BasicLearningRepository;
-import com.example.arclight.repositories.FileVersionRepository;
+import com.example.arclight.repositories.FileRepository;
 import com.example.arclight.repositories.TranslationRepository;
 import com.example.arclight.shared.exceptions.ArclightException;
 import org.slf4j.Logger;
@@ -24,24 +24,23 @@ public class BasicLearningService
     private  final BasicLearningRepository basicLearningRepository;
     private  final TranslationRepository translationRepository;
 
-    private  final FileVersionRepository fileVersionRepository;
+    private  final FileRepository fileRepository;
     private static final Logger logger= LoggerFactory.getLogger(BasicLearningService.class);
 
     @Autowired
-    public  BasicLearningService(BasicLearningRepository basicLearningRepository, TranslationRepository translationRepository, FileVersionRepository fileVersionRepository)
+    public  BasicLearningService(BasicLearningRepository basicLearningRepository, TranslationRepository translationRepository, FileRepository fileRepository)
     {
         this.basicLearningRepository = basicLearningRepository;
         this.translationRepository = translationRepository;
-        this.fileVersionRepository = fileVersionRepository;
+        this.fileRepository = fileRepository;
     }
 
     public List<BasicLearningResponse> GetBycategory(Category category) throws ArclightException {
         var languageOption= GetSecondaryLangauage();
         List<BasicLearning> basicLearnings= basicLearningRepository.findByCategory(category);
-        List<BasicLearningResponse> result = basicLearnings.stream()
+        return basicLearnings.stream()
                 .map(u -> new BasicLearningResponse(u,languageOption))
                 .toList();
-        return result;
     }
 
 
@@ -59,13 +58,11 @@ public class BasicLearningService
                 basicLearningRequest.getCategory());
 
         ValidateBasicLearningRequest(basicLearningRequest);
-        var title= translationRepository.getById(basicLearningRequest.getTitleId());
-        if(title==null)
-            throw  new ArclightException("Title not found");
+        var title= translationRepository.findById(basicLearningRequest.getTitleId())
+                .orElseThrow(()->new ArclightException("Title not found") );
 
-        var description= translationRepository.getById(basicLearningRequest.getDescriptionId());
-        if(description==null)
-            throw  new ArclightException("Description not found");
+        var description= translationRepository.findById(basicLearningRequest.getDescriptionId())
+                .orElseThrow(()-> new ArclightException("Description not found"));
 
         var basicLearning=basicLearningRepository.findByTitle_IdAndDescription_IdAndCategory(
                 basicLearningRequest.getTitleId(),basicLearningRequest.getDescriptionId(),
@@ -76,10 +73,10 @@ public class BasicLearningService
             throw  new ArclightException("Basic learning already exists");
         }
 
-        var fileVersion= fileVersionRepository.findById(basicLearningRequest.getImageVersionId())
-                .orElseThrow(()->new ArclightException("File version not found"));
-        //TODO add the file version implementation
-        basicLearning= new BasicLearning(title, description, basicLearningRequest.getCategory(), fileVersion);
+        var image= fileRepository.findById(basicLearningRequest.getImageId())
+                .orElseThrow(()->new ArclightException("File not found"));
+
+        basicLearning= new BasicLearning(title, description, basicLearningRequest.getCategory(), image);
 
         basicLearningRepository.save(basicLearning);
         var languageOption= GetSecondaryLangauage();
@@ -92,19 +89,17 @@ public class BasicLearningService
                 basicLearningRequest.getCategory());
 
         ValidateBasicLearningRequest(basicLearningRequest);
-        var title= translationRepository.getById(basicLearningRequest.getTitleId());
-        if(title==null)
-            throw  new ArclightException("Title not found");
+        var title= translationRepository.findById(basicLearningRequest.getTitleId())
+                .orElseThrow(()-> new ArclightException("Title not found"));
 
-        var description= translationRepository.getById(basicLearningRequest.getDescriptionId());
-        if(description==null)
-            throw  new ArclightException("Description not found");
+        var description= translationRepository.findById(basicLearningRequest.getDescriptionId())
+                .orElseThrow(()->new ArclightException("Description not found") );
 
         var basicLearning=basicLearningRepository.findByTitle_IdAndDescription_IdAndCategory(
                 basicLearningRequest.getTitleId(),basicLearningRequest.getDescriptionId(),
                 basicLearningRequest.getCategory());
 
-        if(basicLearning!=null){
+        if(basicLearning!=null && basicLearning.getId()!= id){
             logger.error("Basic Learning already exists");
             throw  new ArclightException("Basic learning already exists");
         }
@@ -112,8 +107,10 @@ public class BasicLearningService
         var updatedBasicLearning= basicLearningRepository.findById(id)
                 .orElseThrow(()-> new ArclightException("Basic learning not found"));
 
-        //TODO add the file version implementation
-        updatedBasicLearning.update(title,description,basicLearningRequest.getCategory(),null);
+        var image= fileRepository.findById(basicLearningRequest.getImageId())
+                .orElseThrow(()->new ArclightException("File not found"));
+
+        updatedBasicLearning.update(title,description,basicLearningRequest.getCategory(),image);
 
         basicLearningRepository.save(updatedBasicLearning);
         var languageOption= GetSecondaryLangauage();

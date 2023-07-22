@@ -1,6 +1,7 @@
 package com.example.arclight.controllers;
 
 import com.example.arclight.models.ResponseModel;
+import com.example.arclight.models.users.ProfileRequest;
 import com.example.arclight.services.FileService;
 import com.example.arclight.shared.exceptions.ArclightException;
 import jdk.jfr.ContentType;
@@ -13,10 +14,8 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 
@@ -47,9 +46,55 @@ public class FileController {
                     //.contentType(MediaType.APPLICATION_OCTET_STREAM)
                     .body(resource);
         }
+        catch (ArclightException e){
+            logger.error(e.getMessage(),e);
+            return new ResponseEntity(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
         catch (Exception e){
             logger.error(e.getMessage(),e);
             return new ResponseEntity("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+
+    @RequestMapping(
+            path = "{id}",
+            method = RequestMethod.PUT,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ResponseModel> Update(@PathVariable Long id, @ModelAttribute MultipartFile file)
+    {
+        try{
+            var result= fileService.Update(id, file);
+            return ResponseModel.Ok("File updated successfully", result);
+        }
+        catch (ArclightException e){
+            logger.error(e.getMessage(),e);
+            return ResponseModel.Fail(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return  ResponseModel.Fail("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(
+            method = RequestMethod.POST,
+            consumes = MediaType.MULTIPART_FORM_DATA_VALUE
+    )
+    public ResponseEntity<ResponseModel> Upload(@ModelAttribute MultipartFile file)
+    {
+        try{
+            var result= fileService.UploadFile(file);
+            return ResponseModel.Ok("File uploaded successfully", result);
+        }
+        catch (ArclightException e){
+            logger.error(e.getMessage(),e);
+            return ResponseModel.Fail(e.getMessage(), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return  ResponseModel.Fail("Error occured", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 }

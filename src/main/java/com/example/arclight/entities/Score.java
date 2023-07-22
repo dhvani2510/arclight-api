@@ -4,6 +4,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table
 public class Score extends  BaseEntity
@@ -11,10 +13,7 @@ public class Score extends  BaseEntity
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
     private Long Id;
-    @OneToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(unique = false)
-    private  Quiz quiz;
-    @OneToOne(cascade = CascadeType.PERSIST)
+    @ManyToOne(cascade = CascadeType.PERSIST)
     @JoinColumn(unique = false)
     private User student;
     private double mark;
@@ -22,11 +21,11 @@ public class Score extends  BaseEntity
 
     public  Score(){}
 
-    public Score(Quiz quiz, User student, double mark, double total) {
-        this.quiz = quiz;
+    public Score(User student, double mark, double total) {
         this.student = student;
         this.mark = mark;
         this.total = total;
+        this.setCreatedAt(LocalDateTime.now());
     }
 
     public Long getId() {
@@ -35,14 +34,6 @@ public class Score extends  BaseEntity
 
     public void setId(Long id) {
         Id = id;
-    }
-
-    public Quiz getQuiz() {
-        return quiz;
-    }
-
-    public void setQuiz(Quiz quiz) {
-        this.quiz = quiz;
     }
 
     public User getStudent() {

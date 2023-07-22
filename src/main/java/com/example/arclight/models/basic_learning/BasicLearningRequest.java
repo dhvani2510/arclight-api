@@ -1,6 +1,5 @@
 package com.example.arclight.models.basic_learning;
 
-import com.example.arclight.entities.Translation;
 import com.example.arclight.entities.datatypes.Category;
 
 public class BasicLearningRequest
@@ -8,7 +7,7 @@ public class BasicLearningRequest
     private Long titleId;
     private Long descriptionId;
 
-    private Long  imageVersionId;// TODO to be implemeneted later
+    private Long imageId;// TODO to be implemeneted later
     private Category category;
 
     public Long getTitleId() {
@@ -34,11 +33,11 @@ public class BasicLearningRequest
     public void setCategory(Category category) {
         this.category = category;
     }
-    public Long getImageVersionId() {
-        return imageVersionId;
+    public Long getImageId() {
+        return imageId;
     }
 
-    public void setImageVersionId(Long imageVersionId) {
-        this.imageVersionId = imageVersionId;
+    public void setImageId(Long imageId) {
+        this.imageId = imageId;
     }
 }

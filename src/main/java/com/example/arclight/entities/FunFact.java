@@ -4,6 +4,8 @@ import com.example.arclight.entities.datatypes.Category;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table
 public class FunFact extends BaseEntity
@@ -15,24 +17,21 @@ public class FunFact extends BaseEntity
     private Translation title;
     @OneToOne(cascade = CascadeType.PERSIST)
     public  Translation description;
-    @Enumerated(EnumType.STRING)
-    public Category category;
     @OneToOne(cascade = CascadeType.PERSIST, optional = true)
     @JoinColumn(unique = false)
-    private FileVersion image;
+    private File image;
   
     public  FunFact(){}
-    public FunFact(Translation title, Translation description, Category category, FileVersion image) {
+    public FunFact(Translation title, Translation description, File image) {
     this.title = title;
     this.description = description;
-    this.category = category;
     this.image = image;
+    this.setCreatedAt(LocalDateTime.now());
    }
 
-    public void  update(Translation title, Translation description, Category category, FileVersion image) {
+    public void  update(Translation title, Translation description, File image) {
         this.title = title;
         this.description = description;
-        this.category = category;
         this.image = image;
     }
 
@@ -60,19 +59,11 @@ public class FunFact extends BaseEntity
         this.description = description;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
-    }
-
-    public FileVersion getImage() {
+    public File getImage() {
         return image;
     }
 
-    public void setImage(FileVersion image) {
+    public void setImage(File image) {
         this.image = image;
     }
 }

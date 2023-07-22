@@ -3,6 +3,8 @@ package com.example.arclight.entities;
 import com.example.arclight.entities.datatypes.Category;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table
 public class BasicLearning extends  BaseEntity
@@ -18,17 +20,18 @@ public class BasicLearning extends  BaseEntity
     private Category category;
     @OneToOne(cascade = CascadeType.PERSIST, optional = true)
     @JoinColumn(unique = false)
-    private FileVersion image;
+    private File image;
 
     public  BasicLearning(){}
-    public BasicLearning(Translation title, Translation description, Category category, FileVersion image) {
+    public BasicLearning(Translation title, Translation description, Category category, File image) {
     this.title = title;
     this.description = description;
     this.category = category;
     this.image = image;
+    this.setCreatedAt(LocalDateTime.now());
    }
 
-    public void  update(Translation title, Translation description, Category category, FileVersion image) {
+    public void  update(Translation title, Translation description, Category category, File image) {
         this.title = title;
         this.description = description;
         this.category = category;
@@ -67,11 +70,11 @@ public class BasicLearning extends  BaseEntity
         this.category = category;
     }
 
-    public FileVersion getImage() {
+    public File getImage() {
         return image;
     }
 
-    public void setImage(FileVersion image) {
+    public void setImage(File image) {
         this.image = image;
     }
 }
