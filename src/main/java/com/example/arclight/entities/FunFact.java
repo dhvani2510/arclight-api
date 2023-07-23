@@ -17,7 +17,7 @@ public class FunFact extends BaseEntity
     private Translation title;
     @OneToOne(cascade = CascadeType.PERSIST)
     public  Translation description;
-    @OneToOne(cascade = CascadeType.PERSIST, optional = true)
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = true)
     @JoinColumn(unique = false)
     private File image;
   

@@ -103,6 +103,7 @@ public class QuizService
 
                     var shuffleList= basicLearningRepository.findByCategory(basicLearning.getCategory());
                    // Shuffle the list
+
                    Collections.shuffle(shuffleList);
 
                    // Get the first four elements

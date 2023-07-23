@@ -18,7 +18,7 @@ public class BasicLearning extends  BaseEntity
     private Translation description;
     @Enumerated(EnumType.STRING)
     private Category category;
-    @OneToOne(cascade = CascadeType.PERSIST, optional = true)
+    @ManyToOne(cascade = CascadeType.PERSIST, optional = true)
     @JoinColumn(unique = false)
     private File image;
 

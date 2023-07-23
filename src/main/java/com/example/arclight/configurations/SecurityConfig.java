@@ -43,6 +43,7 @@ public class SecurityConfig {
 
         logger.info("Filter chain is executing");
         httpSecurity
+                .headers(h->h.disable())
                 .csrf(csrf->csrf.disable())
                 .authorizeHttpRequests(requests->
                         requests.requestMatchers( AUTH_WHITELIST).permitAll()
